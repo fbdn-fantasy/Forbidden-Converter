@@ -1,0 +1,8 @@
+'use strict';
+// Development/build helper only. The installed app never downloads dependencies.
+const fs=require('node:fs/promises');const path=require('node:path');const os=require('node:os');const crypto=require('node:crypto');
+const URL='https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/ffmpeg-9.0.2-essentials_build.zip';
+const SHA256='60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba';
+(async()=>{const temp=await fs.mkdtemp(path.join(os.tmpdir(),'ff-media-'));try{console.log('Downloading pinned FFmpeg 9.0.2 Windows x64 bundle…');const r=await fetch(URL);if(!r.ok)throw Error(`HTTP ${r.status}`);const bytes=Buffer.from(await r.arrayBuffer());if(crypto.createHash('sha256').update(bytes).digest('hex')!==SHA256)throw Error('FFmpeg archive checksum mismatch.');const zip=path.join(temp,'media.zip');await fs.writeFile(zip,bytes);
+// Pinned development dependency; not shipped in the installed application.
+const extract=require('extract-zip');await extract(zip,{dir:temp});const root=path.join(temp,'ffmpeg-9.0.2-essentials_build');const project=path.resolve(__dirname,'..');await fs.mkdir(path.join(project,'resources','bin'),{recursive:true});await fs.mkdir(path.join(project,'resources','licenses'),{recursive:true});for(const n of ['ffmpeg.exe','ffprobe.exe'])await fs.copyFile(path.join(root,'bin',n),path.join(project,'resources','bin',n));for(const n of ['README.txt','LICENSE'])await fs.copyFile(path.join(root,n),path.join(project,'resources','licenses','FFmpeg-'+n));console.log('Media tools ready.');}finally{await fs.rm(temp,{recursive:true,force:true});}})().catch(e=>{console.error(e.message);process.exitCode=1;});

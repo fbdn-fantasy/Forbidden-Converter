@@ -1,0 +1,71 @@
+{
+  "name": "forbidden-converter",
+  "version": "0.3.1",
+  "description": "Offline video conversion and watermark studio",
+  "author": "ForbiddenFantasy",
+  "license": "SEE LICENSE IN LICENSE",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "dist:win": "electron-builder --win nsis --x64",
+    "prepare:media": "node scripts/fetch-media.cjs"
+  },
+  "devDependencies": {
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0",
+    "extract-zip": "2.0.1",
+    "resedit": "3.1.0"
+  },
+  "build": {
+    "appId": "studio.forbiddenfantasy.converter",
+    "productName": "Forbidden Converter",
+    "files": [
+      "src/**/*",
+      "package.json",
+      "README.md",
+      "LICENSE",
+      "LICENSE.odt"
+    ],
+    "extraResources": [
+      {
+        "from": "resources",
+        "to": "resources",
+        "filter": [
+          "bin/ffmpeg.exe",
+          "bin/ffprobe.exe",
+          "licenses/FFmpeg-LICENSE",
+          "licenses/FFmpeg-README.txt"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false,
+      "icon": "src/assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "artifactName": "Forbidden-Converter-${version}-Windows-x64-Setup.${ext}",
+      "license": "LICENSE"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "electronLanguages": [
+      "en-US",
+      "en-GB"
+    ],
+    "asarUnpack": [
+      "node_modules/sharp/**/*",
+      "node_modules/@img/**/*"
+    ],
+    "afterPack": "scripts/after-pack.cjs"
+  },
+  "dependencies": {
+    "sharp": "0.34.5"
+  }
+}
