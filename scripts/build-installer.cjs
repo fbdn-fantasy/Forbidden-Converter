@@ -3,7 +3,7 @@
 // First: npx electron-builder --win --dir --x64
 // Then: MAKENSIS=/path/to/makensis node scripts/build-installer.cjs
 const fs=require('node:fs');const path=require('node:path');const {execFileSync}=require('node:child_process');
-const root=path.resolve(__dirname,'..'),dist=path.join(root,'dist'),input=path.join(dist,'win-unpacked');
+const root=path.resolve(__dirname,'..'),dist=path.join(root,process.env.BUILD_OUTPUT||'dist'),input=path.join(dist,'win-unpacked');
 const files=[],dirs=[];function walk(dir,rel=''){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(rel,e.name);if(e.isDirectory()){dirs.push(p);walk(path.join(dir,e.name),p);}else files.push(p);}}walk(input);
 const nsisPath=s=>s.replace(/\$/g,'$$').replace(/"/g,'$\\"');const winPath=s=>s.split(path.sep).join('\\');
 const body=`Unicode true
@@ -11,15 +11,15 @@ const body=`Unicode true
 !include "x64.nsh"
 !include "WinVer.nsh"
 Name "Forbidden Converter"
-OutFile "${nsisPath(path.join(dist,'Forbidden-Converter-0.3.1-Windows-x64-Setup.exe'))}"
+OutFile "${nsisPath(path.join(dist,'Forbidden-Converter-v4-Windows-x64-Setup.exe'))}"
 InstallDir "$LOCALAPPDATA\\Programs\\Forbidden Converter"
 InstallDirRegKey HKCU "Software\\ForbiddenFantasy\\Converter" "InstallDir"
 RequestExecutionLevel user
 SetCompressor /SOLID zlib
-VIProductVersion "0.3.1.0"
+VIProductVersion "0.4.0.0"
 VIAddVersionKey /LANG=1033 "ProductName" "Forbidden Converter"
 VIAddVersionKey /LANG=1033 "FileDescription" "Forbidden Converter offline installer"
-VIAddVersionKey /LANG=1033 "FileVersion" "0.3.1"
+VIAddVersionKey /LANG=1033 "FileVersion" "0.4.0"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright 2026 ForbiddenFantasy"
 !define MUI_ICON "${nsisPath(path.join(root,'src/assets/icon.ico'))}"
 !define MUI_UNICON "${nsisPath(path.join(root,'src/assets/icon.ico'))}"
@@ -52,7 +52,7 @@ CreateShortcut "$SMPROGRAMS\\Forbidden Converter\\Uninstall.lnk" "$INSTDIR\\Unin
 CreateShortcut "$DESKTOP\\Forbidden Converter.lnk" "$INSTDIR\\Forbidden Converter.exe"
 WriteRegStr HKCU "Software\\ForbiddenFantasy\\Converter" "InstallDir" "$INSTDIR"
 WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "DisplayName" "Forbidden Converter"
-WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "DisplayVersion" "0.3.1"
+WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "DisplayVersion" "0.4.0"
 WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "Publisher" "ForbiddenFantasy"
 WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "UninstallString" '$\\"$INSTDIR\\Uninstall.exe$\\"'
 WriteRegStr HKCU "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ForbiddenConverter" "DisplayIcon" "$INSTDIR\\Forbidden Converter.exe"

@@ -26,7 +26,7 @@ async function prepareSource({file,ffmpeg,ffprobe,cacheDir}){
  await media.run(ffmpeg,['-v','error','-nostdin','-y','-f','concat','-safe','0','-protocol_whitelist','file,pipe','-i',list,'-t',String(duration),'-fps_mode','passthrough','-c:v','ffv1','-pix_fmt','bgra','-threads','2',out]);
  const meta=await media.probe(ffprobe,out);
  for(let i=0;i<pages;i++)await fs.rm(path.join(dir,`frame-${i}.png`));await fs.rm(list);
- return {...meta,originalPath:file,name:path.basename(file),duration,fps:pages===1?1:pages/duration,codec:info.format,bytes:(await fs.stat(file)).size,still:pages===1};
+ return {...meta,originalPath:file,name:path.basename(file),duration,fps:pages===1?1:pages/duration,codec:info.format,videoBitrate:(await fs.stat(file)).size*8/duration,bytes:(await fs.stat(file)).size,still:pages===1};
  }finally{await handle.close();await fs.rm(rawPath,{force:true});}
  }catch(e){await fs.rm(dir,{recursive:true,force:true});throw e;}
 }
